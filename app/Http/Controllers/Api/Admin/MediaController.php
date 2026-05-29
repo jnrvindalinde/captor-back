@@ -51,7 +51,7 @@ class MediaController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'file'    => ['required', 'file', 'max:25600'], // 25 MB
+            'file'    => ['required', 'file', 'max:1048576'], // 1 GB; large files use Cloudinary's chunked uploadLarge.
             'folder'  => ['nullable', 'string', 'max:200'],
             'alt_en'  => ['nullable', 'string', 'max:255'],
             'alt_fr'  => ['nullable', 'string', 'max:255'],

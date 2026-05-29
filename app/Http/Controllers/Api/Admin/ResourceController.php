@@ -41,6 +41,7 @@ class ResourceController extends Controller
         $data = $this->validatePayload($request);
         $data['slug'] = $this->uniqueSlug($data['slug'] ?? null, $data['title']);
         $data['author_id'] = $request->user()->id;
+        $data['status'] = $data['status'] ?? Resource::STATUS_PUBLISHED;
         $resource = Resource::create($data);
         return response()->json(['resource' => $resource], 201);
     }
@@ -66,12 +67,13 @@ class ResourceController extends Controller
         return $request->validate([
             'title'        => ['required', 'string', 'max:200'],
             'slug'         => ['nullable', 'string', 'max:220'],
-            'description'  => ['nullable', 'string', 'max:5000'],
+            'description'  => ['nullable', 'string', 'max:50000'],
             'format'       => ['required', Rule::in(Resource::FORMATS)],
-            'file_path'    => ['nullable', 'string', 'max:500'],
-            'external_url' => ['nullable', 'url', 'max:500'],
-            'cover_image'  => ['nullable', 'string', 'max:500'],
-            'status'       => ['required', Rule::in([Resource::STATUS_DRAFT, Resource::STATUS_PUBLISHED])],
+            'file_path'    => ['nullable', 'string', 'max:1000'],
+            'file_label'   => ['nullable', 'string', 'max:200'],
+            'external_url' => ['nullable', 'url', 'max:1000'],
+            'cover_image'  => ['nullable', 'string', 'max:1000'],
+            'status'       => ['nullable', Rule::in([Resource::STATUS_DRAFT, Resource::STATUS_PUBLISHED])],
             'tags'         => ['nullable', 'array'],
             'tags.*'       => ['string', 'max:40'],
         ]);

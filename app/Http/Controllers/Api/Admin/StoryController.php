@@ -43,6 +43,7 @@ class StoryController extends Controller
         $data = $this->validatePayload($request);
         $data['slug'] = $this->uniqueSlug($data['slug'] ?? null, $data['title']);
         $data['author_id'] = $request->user()->id;
+        $data['status'] = $data['status'] ?? Story::STATUS_PUBLISHED;
         $story = Story::create($data);
         return response()->json(['story' => $story], 201);
     }
@@ -66,15 +67,21 @@ class StoryController extends Controller
     private function validatePayload(Request $request, ?Story $story = null): array
     {
         return $request->validate([
-            'title'        => ['required', 'string', 'max:200'],
-            'slug'         => ['nullable', 'string', 'max:220'],
-            'summary'      => ['nullable', 'string', 'max:500'],
-            'body'         => ['nullable', 'string'],
-            'person_name'  => ['required', 'string', 'max:120'],
-            'person_role'  => ['nullable', 'string', 'max:120'],
-            'outcome'      => ['nullable', Rule::in(Story::OUTCOMES)],
-            'cover_image'  => ['nullable', 'string', 'max:500'],
-            'status'       => ['required', Rule::in([Story::STATUS_DRAFT, Story::STATUS_PUBLISHED])],
+            'title'         => ['required', 'string', 'max:200'],
+            'slug'          => ['nullable', 'string', 'max:220'],
+            'summary'       => ['nullable', 'string', 'max:500'],
+            'quote'         => ['nullable', 'string', 'max:1000'],
+            'body'          => ['nullable', 'string', 'max:50000'],
+            'person_name'   => ['required', 'string', 'max:120'],
+            'person_role'   => ['nullable', 'string', 'max:200'],
+            'outcome'       => ['nullable', Rule::in(Story::OUTCOMES)],
+            'outcome_label' => ['nullable', 'string', 'max:200'],
+            'categories'    => ['nullable', 'array'],
+            'categories.*'  => ['string', Rule::in(Story::CATEGORIES)],
+            'cover_image'   => ['nullable', 'string', 'max:1000'],
+            'gallery'       => ['nullable', 'array'],
+            'gallery.*'     => ['string', 'max:1000'],
+            'status'        => ['nullable', Rule::in([Story::STATUS_DRAFT, Story::STATUS_PUBLISHED])],
         ]);
     }
 

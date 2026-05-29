@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.3",
         "cloudinary/cloudinary_php": "^3.1",
+        "google/apiclient": "^2.19",
         "laravel/framework": "^13.8",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0"
@@ -34,6 +35,7 @@
         }
     },
     "scripts": {
+        "pre-autoload-dump": "Google\\Task\\Composer::cleanup",
         "setup": [
             "composer install",
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
@@ -72,7 +74,11 @@
     "extra": {
         "laravel": {
             "dont-discover": []
-        }
+        },
+        "google/apiclient-services": [
+            "Calendar",
+            "Oauth2"
+        ]
     },
     "config": {
         "optimize-autoloader": true,
@@ -81,6 +87,11 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "audit": {
+            "ignore": {
+                "PKSA-y2cr-5h3j-g3ys": "firebase/php-jwt transitive dep via google/apiclient; we do not use it to verify untrusted JWTs."
+            }
         }
     },
     "minimum-stability": "stable",

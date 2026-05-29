@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Api\Admin\ClientController;
 use App\Http\Controllers\Api\Admin\CollectionController;
+use App\Http\Controllers\Api\Admin\AvailabilityController;
 use App\Http\Controllers\Api\Admin\DashboardController;
+use App\Http\Controllers\Api\Admin\GoogleAuthController;
 use App\Http\Controllers\Api\Admin\LeadController;
 use App\Http\Controllers\Api\Admin\MediaController;
 use App\Http\Controllers\Api\Admin\MeetingController;
@@ -17,7 +19,10 @@ use App\Http\Controllers\Api\PublicCollectionController;
 use App\Http\Controllers\Api\PublicFormController;
 use App\Http\Controllers\Api\PublicNavigationController;
 use App\Http\Controllers\Api\PublicPageController;
+use App\Http\Controllers\Api\PublicPostController;
+use App\Http\Controllers\Api\PublicResourceController;
 use App\Http\Controllers\Api\PublicSiteGlobalController;
+use App\Http\Controllers\Api\PublicStoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,8 +31,7 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 Route::prefix('public')->group(function () {
-    Route::post('contact',      [PublicFormController::class, 'contact']);
-    Route::post('org-inquiry',  [PublicFormController::class, 'orgInquiry']);
+    Route::post('contact',      [PublicFormController::class, 'contact']);    Route::post('org-inquiry',  [PublicFormController::class, 'orgInquiry']);
     Route::post('applications', [PublicFormController::class, 'application']);
 
     Route::get('collections/{slug}', [PublicCollectionController::class, 'show']);
@@ -35,7 +39,23 @@ Route::prefix('public')->group(function () {
     Route::get('pages/{slug}/preview/{token}', [PublicPageController::class, 'preview']);
     Route::get('menus/{slug}',       [PublicNavigationController::class, 'show']);
     Route::get('globals',            [PublicSiteGlobalController::class, 'show']);
+
+    Route::get('posts',          [PublicPostController::class, 'index']);
+    Route::get('posts/{slug}',   [PublicPostController::class, 'show']);
+
+    Route::get('resources',         [PublicResourceController::class, 'index']);
+    Route::get('resources/{slug}',  [PublicResourceController::class, 'show']);
+
+    Route::get('stories',         [PublicStoryController::class, 'index']);
+    Route::get('stories/{slug}',  [PublicStoryController::class, 'show']);
 });
+
+/*
+|--------------------------------------------------------------------------
+| Google OAuth callback (no auth — Google posts the redirect)
+|--------------------------------------------------------------------------
+*/
+Route::get('admin/google/callback', [GoogleAuthController::class, 'callback']);
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +79,11 @@ Route::prefix('auth')->group(function () {
 Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index']);
 
+    // Google Calendar integration (per admin user).
+    Route::get('google/connect',     [GoogleAuthController::class, 'connect']);
+    Route::post('google/disconnect', [GoogleAuthController::class, 'disconnect']);
+    Route::get('google/status',      [GoogleAuthController::class, 'status']);
+
     Route::get('leads',                  [LeadController::class, 'index']);
     Route::get('leads/{lead}',           [LeadController::class, 'show']);
     Route::patch('leads/{lead}',         [LeadController::class, 'update']);
@@ -69,6 +94,13 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
     Route::post('leads/{lead}/convert',  [LeadController::class, 'convertToClient']);
 
     Route::get('meetings', [MeetingController::class, 'index']);
+    Route::get('meetings/slots', [MeetingController::class, 'slots']);
+    Route::patch('meetings/{meeting}/reschedule', [MeetingController::class, 'reschedule']);
+    Route::delete('meetings/{meeting}', [MeetingController::class, 'cancel']);
+
+    Route::get('availability',     [AvailabilityController::class, 'index']);
+    Route::put('availability',     [AvailabilityController::class, 'replace']);
+    Route::delete('availability',  [AvailabilityController::class, 'clear']);
 
     Route::apiResource('posts',     PostController::class);
     Route::apiResource('resources', ResourceController::class);

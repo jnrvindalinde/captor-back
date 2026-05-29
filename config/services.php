@@ -44,4 +44,14 @@ return [
         'folder'      => env('CLOUDINARY_FOLDER', 'captor'),
     ],
 
+    'google' => [
+        'client_id'     => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect_uri'  => env('GOOGLE_REDIRECT_URI', 'http://localhost:8000/api/admin/google/callback'),
+    ],
+
+    'booking' => [
+        'public_base_url' => env('BOOKING_PUBLIC_BASE_URL', 'http://localhost:3000'),
+    ],
+
 ];

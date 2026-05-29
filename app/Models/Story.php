@@ -17,9 +17,17 @@ class Story extends Model
         'admission', 'scholarship', 'placement', 'transition', 'achievement',
     ];
 
+    public const CATEGORIES = ['School', 'Scholarship', 'Job', 'Career'];
+
     protected $fillable = [
-        'slug', 'title', 'summary', 'body', 'person_name', 'person_role',
-        'outcome', 'cover_image', 'status', 'author_id',
+        'slug', 'title', 'summary', 'quote', 'body', 'person_name', 'person_role',
+        'outcome', 'outcome_label', 'categories', 'cover_image', 'gallery',
+        'status', 'author_id',
+    ];
+
+    protected $casts = [
+        'categories' => 'array',
+        'gallery' => 'array',
     ];
 
     public function author(): BelongsTo

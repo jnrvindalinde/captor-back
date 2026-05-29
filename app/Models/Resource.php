@@ -16,7 +16,7 @@ class Resource extends Model
     public const FORMATS = ['guide', 'document', 'video', 'audio', 'external'];
 
     protected $fillable = [
-        'slug', 'title', 'description', 'format', 'file_path', 'external_url',
+        'slug', 'title', 'description', 'format', 'file_path', 'file_label', 'external_url',
         'cover_image', 'status', 'tags', 'author_id',
     ];
 

@@ -42,6 +42,7 @@ class PostController extends Controller
         $data = $this->validatePayload($request);
         $data['slug'] = $this->uniqueSlug($data['slug'] ?? null, $data['title']);
         $data['author_id'] = $request->user()->id;
+        $data['status'] = $data['status'] ?? Post::STATUS_PUBLISHED;
         if ($data['status'] === Post::STATUS_PUBLISHED && empty($data['published_at'])) {
             $data['published_at'] = now();
         }
@@ -76,8 +77,8 @@ class PostController extends Controller
             'slug'         => ['nullable', 'string', 'max:220'],
             'excerpt'      => ['nullable', 'string', 'max:500'],
             'body'         => ['nullable', 'string'],
-            'cover_image'  => ['nullable', 'string', 'max:500'],
-            'status'       => ['required', Rule::in([Post::STATUS_DRAFT, Post::STATUS_PUBLISHED])],
+            'cover_image'  => ['nullable', 'string', 'max:1000'],
+            'status'       => ['nullable', Rule::in([Post::STATUS_DRAFT, Post::STATUS_PUBLISHED])],
             'tags'         => ['nullable', 'array'],
             'tags.*'       => ['string', 'max:40'],
             'published_at' => ['nullable', 'date'],

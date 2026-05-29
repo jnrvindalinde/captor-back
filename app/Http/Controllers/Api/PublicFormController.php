@@ -9,14 +9,20 @@ use App\Models\ApplicationFile;
 use App\Models\ContactMessage;
 use App\Models\Lead;
 use App\Models\OrgInquiry;
+use App\Services\CloudinaryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 
 class PublicFormController extends Controller
 {
+    public function __construct(private CloudinaryService $cloudinary)
+    {
+    }
+
     /**
      * Contact page form submission.
      * POST /api/public/contact
@@ -159,7 +165,22 @@ class PublicFormController extends Controller
             ]);
 
             foreach ($request->file('files', []) as $upload) {
-                $path = $upload->store("applications/{$application->id}");
+                $path = null;
+                if ($this->cloudinary->isConfigured()) {
+                    try {
+                        $resp = $this->cloudinary->upload($upload, "applications/{$application->id}");
+                        $path = $resp['secure_url'] ?? null;
+                    } catch (\Throwable $e) {
+                        Log::warning('Cloudinary upload failed; falling back to local disk', [
+                            'application_id' => $application->id,
+                            'file' => $upload->getClientOriginalName(),
+                            'error' => $e->getMessage(),
+                        ]);
+                    }
+                }
+                if ($path === null) {
+                    $path = $upload->store("applications/{$application->id}");
+                }
                 ApplicationFile::create([
                     'application_id' => $application->id,
                     'original_name'  => $upload->getClientOriginalName(),

@@ -10,13 +10,24 @@ class Meeting extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'lead_id', 'scheduled_by', 'scheduled_at',
+        'token', 'lead_id', 'scheduled_by', 'scheduled_at', 'duration_minutes', 'timezone',
+        'attendee_email', 'attendee_name',
         'google_event_id', 'google_meet_link', 'status', 'notes',
     ];
 
     protected $casts = [
         'scheduled_at' => 'datetime',
+        'duration_minutes' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Meeting $meeting) {
+            if (empty($meeting->token)) {
+                $meeting->token = bin2hex(random_bytes(24));
+            }
+        });
+    }
 
     public function lead(): BelongsTo
     {
