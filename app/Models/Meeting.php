@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Meeting extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'lead_id', 'scheduled_by', 'scheduled_at',
         'google_event_id', 'google_meet_link', 'status', 'notes',

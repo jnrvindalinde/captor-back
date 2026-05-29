@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'cloudinary' => [
+        // Either set CLOUDINARY_URL (recommended) OR the three CLOUDINARY_* vars.
+        'url'         => env('CLOUDINARY_URL'),
+        'cloud_name'  => env('CLOUDINARY_CLOUD_NAME'),
+        'api_key'     => env('CLOUDINARY_API_KEY'),
+        'api_secret'  => env('CLOUDINARY_API_SECRET'),
+        'folder'      => env('CLOUDINARY_FOLDER', 'captor'),
+    ],
+
 ];
